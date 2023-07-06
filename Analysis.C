@@ -383,7 +383,7 @@ void AnalysisB10(string input_file_folder,
     //double resy_bot_g_coinc = 0;
 
     // csv header
-    std::cout << "event, pixel, x, y, charge" << std::endl; 
+    std::cout << " Particle type, cluster position in x, cluster position in y, local Start X, local start Y, local end X, local end Y, X, Y, charge " << std::endl; 
     
     for(int i = 0; i < pixel_hit_tree->GetEntries(); ++i) {
         int totalTOT = 0;
@@ -474,7 +474,7 @@ void AnalysisB10(string input_file_folder,
 		   
 		    
 		    // cout << "Neutron interaction detected" << std::endl;
-            if(cluTOT > 0 && clu.getSize() > 1) {
+              if(cluTOT > 0 && clu.getSize() > 1) {
 
 			resx_point->Fill(mcX_end - mcX);
 			resy_point->Fill(mcY_end - mcY);
@@ -529,26 +529,40 @@ void AnalysisB10(string input_file_folder,
 			histo_iter++;
 
             int clu_event_iter = 0;
+            bool printed = false;
             //std::cout << " i = " << i << std::endl;
+      
 
             for(auto pixel : clu.getPixelHits()) {
 			  auto pix_addr = pixel->getIndex();
 			 //if (clu_event_iter < 10) 
-             if (true) {
-             // std:: cout << "clu_event_iter: " << clu_event_iter << "; " << pix_addr.x() << "; " << pix_addr.y() << "; " << pixel->getSignal() << std::endl; 
-                std::cout << i << ", " << clu_event_iter << ", " << pix_addr.x() << ", " << pix_addr.y() << ", " << pixel->getSignal() << std::endl;
+             if (clu_event_iter == 0 && !printed) {
+                if (id == 1000030070) std::cout << "0, ";
+                      else if(id == 1000020040) std::cout << "1, ";
+                std::cout << posX << ", " << posY << ", " << mcX << ", " << mcY << ", " << mcX_end << ", " << mcY_end;
+                printed = true; 
+                //break;
              }
-             // std::cout << clu_event_iter << std::endl;
-			  //if (clu_event_iter==0) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal(); 
-			  //else if (clu_event_iter==1) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
+             
+			 if (clu_event_iter == 0) {
+                if (printed)
+                 std::cout << ", ";
+                 std:: cout << pix_addr.x() << ", " << pix_addr.y() << ", "; 
+                 std::streamsize prevPrecision = std::cout.precision();
+                 std::cout << std::fixed << std::setprecision(0) << pixel->getSignal();
+                 std::cout.precision(prevPrecision);
+             }
+              //else if (clu_event_iter==1) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
 			  //else if (clu_event_iter==2) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
 			  //else if (clu_event_iter==3) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
 			  //else if (clu_event_iter==4) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
 			  //else if (clu_event_iter==5) std:: cout << " " << pix_addr.x() << " " << pix_addr.y() << " " << pixel->getSignal();
-			  clu_event_iter++;
+			  //clu_event_iter++;
+             ;
             }
-           //cout << std::endl;
-    	   // clu_event_iter++;
+            cout << std::endl;
+    	    clu_event_iter++;
+            //std::cout << clu_event_iter << std::endl;
 			
             }
             resx_bot_coinc = posX - mcX + pitch / 2;
